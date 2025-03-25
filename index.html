@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prateleira de Podcasts</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <!-- Vue.js via CDN (versão de produção) -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>🎧 Podcasts</h1>
+            <p>Encontre podcasts essenciais sobre gestão de produtos digitais, UX/UI e inovação!</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ totalPodcasts }}</div>
+                <div class="stat-label">Total de Podcasts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ totalBrazilianPodcasts }}</div>
+                <div class="stat-label">
+                    <span>Podcasts Brasileiros</span>
+                    <span class="stat-flag">🇧🇷</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="filters">
+            <input 
+                type="text" 
+                v-model="searchTerm" 
+                placeholder="Buscar por nome ou descrição..." 
+                class="search-input"
+            >
+            <div class="filter-group">
+                <select v-model="categoryFilter" class="filter-select" aria-label="Filtrar por categoria">
+                    <option value="">📂 Todas as Categorias</option>
+                    <option v-for="category in categories" :key="category" :value="category">
+                        {{ category }}
+                    </option>
+                </select>
+
+                <select v-model="languageFilter" class="filter-select" aria-label="Filtrar por idioma">
+                    <option value="">🗣️ Todos os Idiomas</option>
+                    <option v-for="language in languages" :key="language" :value="language">
+                        {{ language }}
+                    </option>
+                </select>
+
+                <select v-model="countryFilter" class="filter-select" aria-label="Filtrar por país">
+                    <option value="">🌎 Todos os Países</option>
+                    <option v-for="country in countries" :key="country.name" :value="country.name">
+                        {{ country.flag }} {{ country.name }}
+                    </option>
+                </select>
+            </div>
+        </section>
+
+        <main>
+            <div v-if="filteredPodcasts.length" class="podcasts-grid">
+                <article v-for="podcast in filteredPodcasts" :key="podcast.id" class="podcast-card">
+                    <div class="podcast-image">
+                        <img :src="podcast.imageUrl" :alt="podcast.name">
+                    </div>
+                    <div class="podcast-info">
+                        <h3>{{ podcast.name }}</h3>
+                        <div class="podcast-tags">
+                            <span class="podcast-category">{{ podcast.category }}</span>
+                            <span class="podcast-language">{{ podcast.language }}</span>
+                            <span class="podcast-country" :title="podcast.country">{{ podcast.flag }}</span>
+                        </div>
+                        <div class="podcast-description">{{ podcast.description }}</div>
+                        <div class="podcast-actions">
+                            <a :href="podcast.spotifyUrl" target="_blank" rel="noopener noreferrer" class="podcast-link spotify">
+                                <span class="icon">🎧</span> Ouvir
+                            </a>
+                            <a :href="podcast.url" target="_blank" rel="noopener noreferrer" class="podcast-link website">
+                                <span class="icon">🌐</span> Visitar
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div v-else class="no-results">
+                <h2>Nenhum podcast encontrado 😕</h2>
+                <p>Tente ajustar seus filtros para encontrar mais resultados.</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Desenvolvido com 💙 para amantes de podcasts e produtos digitais</p>
+        </footer>
+
+        <!-- Botão flutuante e menu -->
+        <div class="fab-container" :class="{ 'is-active': isFabActive }">
+            <div class="fab-menu">
+                <a href="#" class="fab-item" @click.prevent="showAddPodcastModal">
+                    <span class="fab-item-icon">🎙️</span>
+                    <span class="fab-item-label">Adicionar podcast</span>
+                </a>
+                <a href="#" class="fab-item" @click.prevent="showNewsletterModal">
+                    <span class="fab-item-icon">✉️</span>
+                    <span class="fab-item-label">Inscrever-se</span>
+                </a>
+            </div>
+            <button class="fab-button" @click="toggleFab" :aria-label="isFabActive ? 'Fechar menu' : 'Abrir menu'">
+                <span class="fab-icon">{{ isFabActive ? '✕' : '+' }}</span>
+            </button>
+        </div>
+
+        <!-- Modal de Adicionar Podcast -->
+        <div class="modal" v-if="showingAddPodcast" @click.self="showingAddPodcast = false">
+            <div class="modal-content">
+                <h2>🎙️ Adicionar Podcast</h2>
+                <p>Em breve você poderá sugerir novos podcasts para nossa prateleira!</p>
+                <button class="modal-close" @click="showingAddPodcast = false">Fechar</button>
+            </div>
+        </div>
+
+        <!-- Modal de Newsletter -->
+        <div class="modal" v-if="showingNewsletter" @click.self="showingNewsletter = false">
+            <div class="modal-content">
+                <h2>✉️ Inscrever-se</h2>
+                <p>Em breve você poderá se inscrever para receber novidades sobre podcasts!</p>
+                <button class="modal-close" @click="showingNewsletter = false">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="podcasts.js"></script>
+    <script src="app.js?v=2"></script>
+</body>
+</html>
