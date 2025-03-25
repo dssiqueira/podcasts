@@ -14,11 +14,13 @@ createApp({
 
     // Computed properties para filtros
     const categories = computed(() => {
-      return [...new Set(podcasts.value.map(p => p.category))].sort();
+      return [...new Set(podcasts.value.map(p => p.category))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
     });
 
     const languages = computed(() => {
-      return [...new Set(podcasts.value.map(p => p.language))].sort();
+      return [...new Set(podcasts.value.map(p => p.language))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
     });
 
     const countries = computed(() => {
@@ -32,7 +34,7 @@ createApp({
         }
       })
       return Array.from(uniqueCountries.values())
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
     });
 
     const totalPodcasts = computed(() => {
@@ -66,7 +68,8 @@ createApp({
         const matchesCountry = !countryFilter.value || podcast.country === countryFilter.value;
 
         return matchesSearch && matchesCategory && matchesLanguage && matchesCountry;
-      });
+      })
+      .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')); // Ordena alfabeticamente usando regras do português
     });
 
     const selectedCountryFlag = computed(() => {
