@@ -111,17 +111,6 @@ createApp({
       isFabActive.value = false;
     }
 
-    function closePodcastModal() {
-      showingAddPodcast.value = false;
-      podcastSuccess.value = false;
-      // Limpar formulário
-      podcastForm.value = {
-        name: '',
-        spotifyUrl: '',
-        comments: ''
-      };
-    }
-
     function showNewsletterModal() {
       showingNewsletter.value = true;
       newsletterSuccess.value = false;
@@ -131,6 +120,17 @@ createApp({
     function closeNewsletterModal() {
       showingNewsletter.value = false;
       newsletterSuccess.value = false;
+    }
+
+    function closePodcastModal() {
+      showingAddPodcast.value = false;
+      podcastSuccess.value = false;
+      // Limpar formulário
+      podcastForm.value = {
+        name: '',
+        spotifyUrl: '',
+        comments: ''
+      };
     }
 
     function triggerConfetti() {
@@ -143,16 +143,16 @@ createApp({
 
     async function submitNewsletter() {
       try {
-        const response = await fetch('https://automacao-n8n.wm8h0r.easypanel.host/webhook/480d59a2-2ed1-494b-aa4c-70b295687db6', {
-          method: 'POST',
+        const params = new URLSearchParams({
+          nome: newsletterForm.value.name,
+          email: newsletterForm.value.email
+        });
+
+        const response = await fetch(`https://automacao-n8n.wm8h0r.easypanel.host/webhook/480d59a2-2ed1-494b-aa4c-70b295687db6?${params.toString()}`, {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            nome: newsletterForm.value.name,
-            email: newsletterForm.value.email
-          })
+          }
         });
 
         if (response.ok) {
@@ -174,17 +174,17 @@ createApp({
 
     async function submitPodcast() {
       try {
-        const response = await fetch('https://automacao-n8n.wm8h0r.easypanel.host/webhook/76c80aa8-e1c8-4ecf-8805-dccac680998c', {
-          method: 'POST',
+        const params = new URLSearchParams({
+          nome: podcastForm.value.name,
+          spotify: podcastForm.value.spotifyUrl,
+          obs: podcastForm.value.comments
+        });
+
+        const response = await fetch(`https://automacao-n8n.wm8h0r.easypanel.host/webhook/76c80aa8-e1c8-4ecf-8805-dccac680998c?${params.toString()}`, {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            nome: podcastForm.value.name,
-            spotify: podcastForm.value.spotifyUrl,
-            obs: podcastForm.value.comments
-          })
+          }
         });
 
         if (response.ok) {
