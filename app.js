@@ -11,6 +11,17 @@ createApp({
     const isFabActive = ref(false);
     const showingAddPodcast = ref(false);
     const showingNewsletter = ref(false);
+    const newsletterSuccess = ref(false);
+    const podcastSuccess = ref(false);
+    const newsletterForm = ref({
+      name: '',
+      email: ''
+    });
+    const podcastForm = ref({
+      name: '',
+      spotifyUrl: '',
+      comments: ''
+    });
 
     // Computed properties para filtros
     const categories = computed(() => {
@@ -95,35 +106,133 @@ createApp({
     }
 
     function showAddPodcastModal() {
-      showingAddPodcast.value = true
-      isFabActive.value = false
+      showingAddPodcast.value = true;
+      podcastSuccess.value = false;
+      isFabActive.value = false;
+    }
+
+    function closePodcastModal() {
+      showingAddPodcast.value = false;
+      podcastSuccess.value = false;
+      // Limpar formulário
+      podcastForm.value = {
+        name: '',
+        spotifyUrl: '',
+        comments: ''
+      };
     }
 
     function showNewsletterModal() {
-      showingNewsletter.value = true
-      isFabActive.value = false
+      showingNewsletter.value = true;
+      newsletterSuccess.value = false;
+      isFabActive.value = false;
+    }
+
+    function closeNewsletterModal() {
+      showingNewsletter.value = false;
+      newsletterSuccess.value = false;
+    }
+
+    function triggerConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+
+    async function submitNewsletter() {
+      try {
+        const response = await fetch('https://automacao-n8n.wm8h0r.easypanel.host/webhook/480d59a2-2ed1-494b-aa4c-70b295687db6', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: newsletterForm.value.name,
+            email: newsletterForm.value.email
+          })
+        });
+
+        if (response.ok) {
+          newsletterSuccess.value = true;
+          triggerConfetti();
+          // Limpar formulário
+          newsletterForm.value = {
+            name: '',
+            email: ''
+          };
+        } else {
+          throw new Error('Erro ao realizar inscrição');
+        }
+      } catch (error) {
+        alert('Desculpe, ocorreu um erro ao processar sua inscrição. Por favor, tente novamente.');
+        console.error('Erro detalhado:', error);
+      }
+    }
+
+    async function submitPodcast() {
+      try {
+        const response = await fetch('https://automacao-n8n.wm8h0r.easypanel.host/webhook/76c80aa8-e1c8-4ecf-8805-dccac680998c', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: podcastForm.value.name,
+            spotify: podcastForm.value.spotifyUrl,
+            obs: podcastForm.value.comments
+          })
+        });
+
+        if (response.ok) {
+          podcastSuccess.value = true;
+          triggerConfetti();
+          // Limpar formulário
+          podcastForm.value = {
+            name: '',
+            spotifyUrl: '',
+            comments: ''
+          };
+        } else {
+          throw new Error('Erro ao enviar sugestão de podcast');
+        }
+      } catch (error) {
+        alert('Desculpe, ocorreu um erro ao enviar sua sugestão. Por favor, tente novamente.');
+        console.error('Erro detalhado:', error);
+      }
     }
 
     return {
       title,
+      podcasts,
       searchTerm,
       categoryFilter,
       languageFilter,
       countryFilter,
-      podcasts,
       isFabActive,
       showingAddPodcast,
       showingNewsletter,
+      newsletterSuccess,
+      podcastSuccess,
+      newsletterForm,
+      podcastForm,
+      filteredPodcasts,
       categories,
       languages,
       countries,
       totalPodcasts,
       totalBrazilianPodcasts,
-      filteredPodcasts,
       selectedCountryFlag,
       toggleFab,
       showAddPodcastModal,
-      showNewsletterModal
+      showNewsletterModal,
+      closeNewsletterModal,
+      closePodcastModal,
+      submitNewsletter,
+      submitPodcast
     };
   }
 }).mount('#app');

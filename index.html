@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-N4LMM2KC');</script>
+    <!-- End Google Tag Manager -->
     <title>Prateleira de Podcasts</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +23,10 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N4LMM2KC" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="app">
         <header>
             <div class="header-content">
@@ -121,24 +135,83 @@
 
         <!-- Modal de Adicionar Podcast -->
         <div class="modal" v-if="showingAddPodcast" @click.self="showingAddPodcast = false">
-            <div class="modal-content">
-                <h2>🎙️ Adicionar Podcast</h2>
-                <p>Em breve você poderá sugerir novos podcasts para nossa prateleira!</p>
-                <button class="modal-close" @click="showingAddPodcast = false">Fechar</button>
+            <div class="modal-content" :class="{ 'success': podcastSuccess }">
+                <!-- Formulário -->
+                <template v-if="!podcastSuccess">
+                    <h2>🎙️ Adicionar Podcast</h2>
+                    <p>Sugira um podcast para nossa prateleira!</p>
+                    <form class="podcast-form" @submit.prevent="submitPodcast">
+                        <div class="form-group">
+                            <label for="podcastName">Nome do Podcast</label>
+                            <input type="text" id="podcastName" v-model="podcastForm.name" required placeholder="Nome do podcast">
+                        </div>
+                        <div class="form-group">
+                            <label for="spotifyUrl">Link do Spotify</label>
+                            <input type="url" id="spotifyUrl" v-model="podcastForm.spotifyUrl" required placeholder="https://open.spotify.com/show/...">
+                        </div>
+                        <div class="form-group">
+                            <label for="comments">Observações</label>
+                            <textarea id="comments" v-model="podcastForm.comments" rows="3" placeholder="Deixe um comentário ou seu nome para aparecer nos agradecimentos"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">Enviar Sugestão</button>
+                            <button type="button" class="modal-close" @click="showingAddPodcast = false">Cancelar</button>
+                        </div>
+                    </form>
+                </template>
+                
+                <!-- Mensagem de Sucesso -->
+                <template v-else>
+                    <div class="success-content">
+                        <img src="https://dsiqueira.com/handbook/img/success.gif" alt="Sucesso!" class="success-image">
+                        <h2>Sugestão enviada!</h2>
+                        <p>Muito obrigado pela sua sugestão! Vamos avaliar o podcast e em breve ele pode aparecer na nossa prateleira.</p>
+                        <p class="success-subtitle">Sua contribuição é muito importante para fazer essa comunidade crescer!</p>
+                        <button class="modal-close" @click="closePodcastModal">Fechar</button>
+                    </div>
+                </template>
             </div>
         </div>
 
         <!-- Modal de Newsletter -->
         <div class="modal" v-if="showingNewsletter" @click.self="showingNewsletter = false">
-            <div class="modal-content">
-                <h2>✉️ Inscrever-se</h2>
-                <p>Em breve você poderá se inscrever para receber novidades sobre podcasts!</p>
-                <button class="modal-close" @click="showingNewsletter = false">Fechar</button>
+            <div class="modal-content" :class="{ 'success': newsletterSuccess }">
+                <!-- Formulário -->
+                <template v-if="!newsletterSuccess">
+                    <h2>✉️ Inscrever-se</h2>
+                    <p>Receba novidades sobre podcasts de produtos digitais!</p>
+                    <form class="newsletter-form" @submit.prevent="submitNewsletter">
+                        <div class="form-group">
+                            <label for="name">Nome</label>
+                            <input type="text" id="name" v-model="newsletterForm.name" required placeholder="Seu nome">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" v-model="newsletterForm.email" required placeholder="seu@email.com">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-button">Inscrever-se</button>
+                            <button type="button" class="modal-close" @click="showingNewsletter = false">Cancelar</button>
+                        </div>
+                    </form>
+                </template>
+                
+                <!-- Mensagem de Sucesso -->
+                <template v-else>
+                    <div class="success-content">
+                        <img src="https://dsiqueira.com/handbook/img/success.gif" alt="Sucesso!" class="success-image">
+                        <h2>Inscrição realizada!</h2>
+                        <p>Valeu por se inscrever! Esperamos que você aproveite as novidades sobre podcasts de produtos digitais.</p>
+                        <p class="success-subtitle">Se tiver dúvidas ou sugestões, ficaremos felizes em ouvir!</p>
+                        <button class="modal-close" @click="closeNewsletterModal">Fechar</button>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
 
     <script src="podcasts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="app.js?v=2"></script>
 </body>
 </html>
