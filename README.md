@@ -31,3 +31,6 @@ Basta abrir o arquivo `index.html` em um navegador web moderno. Não é necessá
 - JavaScript
 - Vue.js (via CDN)
 - Google Fonts (Noto Color Emoji para as bandeiras)
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
